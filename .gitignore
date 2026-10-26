@@ -26,3 +26,4 @@ venv/
 *.tmp
 *.bak
 index-backup.html
+task3-static-website/.git-backup/

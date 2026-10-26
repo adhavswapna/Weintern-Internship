@@ -1,0 +1,7 @@
+{
+  "Name": "weintern-task3-oac-swapnaadhav",
+  "Description": "OAC for WeIntern Internship Task 3",
+  "SigningProtocol": "sigv4",
+  "SigningBehavior": "always",
+  "OriginAccessControlOriginType": "s3"
+}
