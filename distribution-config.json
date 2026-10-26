@@ -1,0 +1,50 @@
+{
+  "CallerReference": "weintern-task3-swapnaadhav-20261026",
+  "Comment": "WeIntern Internship Task 3 - Static Website",
+  "Enabled": true,
+  "DefaultRootObject": "index.html",
+  "HttpVersion": "http2",
+  "IsIPV6Enabled": true,
+  "Origins": {
+    "Quantity": 1,
+    "Items": [
+      {
+        "Id": "weintern-task3-s3-origin",
+        "DomainName": "weintern-task3-s3-swapnaadhav.s3.ap-southeast-2.amazonaws.com",
+        "OriginAccessControlId": "E2M1DLNO7XA6O4",
+        "S3OriginConfig": {
+          "OriginAccessIdentity": ""
+        }
+      }
+    ]
+  },
+  "DefaultCacheBehavior": {
+    "TargetOriginId": "weintern-task3-s3-origin",
+    "ViewerProtocolPolicy": "redirect-to-https",
+    "AllowedMethods": {
+      "Quantity": 2,
+      "Items": ["GET", "HEAD"],
+      "CachedMethods": {
+        "Quantity": 2,
+        "Items": ["GET", "HEAD"]
+      }
+    },
+    "Compress": true,
+    "ForwardedValues": {
+      "QueryString": false,
+      "Cookies": {
+        "Forward": "none"
+      },
+      "Headers": {
+        "Quantity": 0
+      }
+    },
+    "MinTTL": 0,
+    "DefaultTTL": 86400,
+    "MaxTTL": 31536000
+  },
+  "PriceClass": "PriceClass_100",
+  "ViewerCertificate": {
+    "CloudFrontDefaultCertificate": true
+  }
+}

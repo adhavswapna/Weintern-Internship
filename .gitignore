@@ -1,0 +1,5 @@
+index-backup.html
+.DS_Store
+*.pem
+.env
+.env.*
