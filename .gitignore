@@ -1,5 +1,28 @@
-index-backup.html
-.DS_Store
+# Sensitive credentials and environment variables
 *.pem
+*.key
 .env
 .env.*
+
+# AWS CLI installer archive
+awscliv2.zip
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Editor files
+*~
+*.swp
+*.swo
+
+# Python generated files
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Temporary and backup files
+*.tmp
+*.bak
+index-backup.html
