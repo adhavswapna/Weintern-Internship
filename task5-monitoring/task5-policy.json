@@ -1,0 +1,21 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "BudgetMonitoring",
+      "Effect": "Allow",
+      "Action": [
+        "budgets:ViewBudget",
+        "budgets:DescribeBudget",
+        "budgets:DescribeBudgets",
+        "budgets:CreateBudget",
+        "budgets:ModifyBudget",
+        "budgets:DescribeNotificationsForBudget",
+        "budgets:DescribeSubscribersForNotification",
+        "budgets:CreateNotification",
+        "budgets:CreateSubscriber"
+      ],
+      "Resource": "*"
+    }
+  ]
+}

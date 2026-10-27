@@ -1,12 +1,13 @@
 
 #!/bin/bash
 
-# This script lists running EC2 instances with a specific tag.
-# It estimates the monthly cost based on the instance type.
+# EC2 Cost Estimator
+# Estimates monthly compute costs for running EC2 instances
+# with the specified Name tag.
 
 REGION="ap-southeast-2"
-TAG_KEY="Environment"
-TAG_VALUE="Learning"
+TAG_KEY="Name"
+TAG_VALUE="weintern-dev-ec2"
 
 echo "EC2 Cost Estimator"
 echo "------------------"
@@ -34,7 +35,8 @@ else
                 ;;
         esac
 
-        MONTHLY=$(awk -v rate="$RATE" 'BEGIN {printf "%.2f", rate * 730}')
+        MONTHLY=$(awk -v rate="$RATE" \
+            'BEGIN {printf "%.2f", rate * 730}')
 
         echo "Instance ID: $ID"
         echo "Instance Type: $TYPE"
