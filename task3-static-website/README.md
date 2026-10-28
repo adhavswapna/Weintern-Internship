@@ -1,316 +1,174 @@
-# WeIntern Internship — Task 3
-## Deploy a Static Website Using Amazon S3 and Amazon CloudFront
+# WEINTERN CLOUD INTERNSHIP – TASK 3
+## Deploying a Static Website Using Amazon S3 and CloudFront
 
-**Author:** Swapna Adhav  
-**Project:** WeIntern Internship  
-**Task:** Task 3 — Deploy a Static Site via S3 / GCS  
-**Cloud Provider:** Amazon Web Services (AWS)  
-**Region:** Asia Pacific (Sydney) — `ap-southeast-2`  
-**Status:** Successfully deployed and verified
+### 📌 Project Overview
+
+This project demonstrates how to deploy a static website using **Amazon S3 and Amazon CloudFront**. The website files are stored in an Amazon S3 bucket, and CloudFront distributes the website content to users through a CDN (Content Delivery Network).
+
+The project was completed as part of the **WeIntern Cloud Internship – Task 3**.
+
+### 🎯 Objectives
+
+- Create an Amazon S3 bucket to store static website files.
+- Upload the website's `index.html` file to S3.
+- Configure Amazon CloudFront as a content delivery network.
+- Use Origin Access Control (OAC) to help secure access to the S3 origin.
+- Verify that the website is accessible through the CloudFront distribution.
+- Document the deployment process and AWS CLI commands.
 
 ---
 
-## 1. Project Overview
+## 🏗️ Architecture
 
-The objective of this project is to deploy a static website using Amazon Simple Storage Service (Amazon S3) and Amazon CloudFront.
+```text
+                  User / Web Browser
+                         |
+                         v
+                Amazon CloudFront
+                 (CDN Distribution)
+                         |
+                         v
+                Origin Access Control
+                         |
+                         v
+                 Private Amazon S3
+                  (index.html)
+```
 
-The HTML website is stored in an S3 bucket. CloudFront distributes the website to visitors over HTTPS. The S3 bucket remains private, and CloudFront uses Origin Access Control (OAC) to access the website files.
+**How it works:**
 
-### Live Website
+1. The website's HTML file is uploaded to Amazon S3.
+2. Amazon CloudFront receives requests from users.
+3. CloudFront retrieves website content from the S3 origin.
+4. CloudFront delivers the content to the user's browser.
+5. Origin Access Control (OAC), when correctly configured with the S3 bucket policy, restricts direct origin access and allows CloudFront to access the private bucket.
 
-**Website URL:** https://dwpuiw40xj1jx.cloudfront.net/
+---
 
-**GitHub Repository:** https://github.com/adhavswapna/Weintern-Internship
+## ☁️ AWS Resources
 
-## 2. Objectives
-
-- Create an Amazon S3 bucket.
-- Configure the AWS region and resource tags.
-- Keep the S3 bucket private by blocking public access.
-- Upload the static website's `index.html` file.
-- Configure CloudFront to distribute the website.
-- Use Origin Access Control (OAC) to protect the S3 origin.
-- Configure a bucket policy to allow CloudFront to read website files.
-- Redirect HTTP requests to HTTPS.
-- Verify the deployment and document the results.
-
-## 3. Technologies Used
-
-- **Amazon S3:** Stores the static website files.
-- **Amazon CloudFront:** Distributes the website to visitors.
-- **Origin Access Control (OAC):** Allows CloudFront to access the private S3 origin.
-- **AWS CLI:** Creates and manages AWS resources from the terminal.
-- **HTML and CSS:** Build and style the website.
-- **Git and GitHub:** Version control and project documentation.
-- **Python 3:** Basic HTML and JSON validation.
-
-## 4. AWS Resource Details
-
-| Resource | Configuration |
+| Resource | Details |
 |---|---|
+| Cloud Provider | Amazon Web Services (AWS) |
 | AWS Region | `ap-southeast-2` |
-| S3 Bucket | `weintern-task3-s3-swapnaadhav` |
+| S3 Bucket Name | `weintern-task3-s3-swapnaadhav` |
 | CloudFront Distribution ID | `EAGMUDC8KCZVQ` |
 | CloudFront Domain | `dwpuiw40xj1jx.cloudfront.net` |
 | Origin Access Control ID | `E2M1DLNO7XA6O4` |
-| Default Root Object | `index.html` |
-| Viewer Protocol Policy | Redirect HTTP to HTTPS |
-| Allowed HTTP Methods | GET, HEAD |
-| CloudFront Price Class | `PriceClass_100` |
-| Object Encryption Observed | AES256 |
+| Website File | `index.html` |
+| Encryption | Amazon S3 managed encryption (AES256) |
+| Source Code Repository | [Weintern-Internship](https://github.com/adhavswapna/Weintern-Internship) |
 
-## 5. Architecture
+> **Note:** The AWS account ID and IAM username have been omitted from this public README for security and privacy. Avoid publishing credentials, access keys, secret keys, or other sensitive information.
 
-```text
-                 Website Visitor
-                        |
-                        | HTTPS
-                        v
-                Amazon CloudFront
-                Distribution
-                EAGMUDC8KCZVQ
-                        |
-                        | Secure origin access
-                        | through OAC
-                        v
-                 Amazon S3 Bucket
-       weintern-task3-s3-swapnaadhav
-                        |
-                        v
-                    index.html
-```
+---
 
-### How It Works
+## 🛠️ Technologies Used
 
-1. A visitor opens the CloudFront website URL.
-2. CloudFront receives the HTTPS request.
-3. CloudFront retrieves the requested file from the S3 bucket using OAC.
-4. The S3 bucket policy authorizes read access for the specified CloudFront distribution.
-5. CloudFront returns the website content to the visitor.
+- **Amazon S3:** Stores the website's static files.
+- **Amazon CloudFront:** Distributes website content through AWS edge locations.
+- **Origin Access Control (OAC):** Helps secure the connection between CloudFront and a private S3 bucket.
+- **AWS CLI:** Used to create, configure, and verify AWS resources.
+- **Git and GitHub:** Used for source control and project documentation.
+- **HTML:** Used to create the static website.
 
-The S3 bucket is not configured for public access.
+---
 
-## 6. Prerequisites
+## 🚀 Implementation Steps
 
-Before starting, ensure you have:
+### Step 1: Configure AWS CLI
 
-- An AWS account.
-- AWS CLI installed.
-- AWS CLI configured with suitable permissions.
-- Python 3 installed.
-- A GitHub account.
-- A local project directory containing `index.html`.
-
-Verify your AWS CLI installation:
+Configure the AWS CLI with an IAM user or role that has the required permissions.
 
 ```bash
-aws --version
+aws configure
 ```
 
-Check the active AWS identity:
+Set the AWS region:
+
+```bash
+aws configure set region ap-southeast-2
+```
+
+Verify the active AWS identity:
 
 ```bash
 aws sts get-caller-identity
 ```
 
-Check the configured AWS region:
-
-```bash
-aws configure get region
-```
-
-The configured region for this project is:
-
-```text
-ap-southeast-2
-```
-
-## 7. Step-by-Step Implementation
-
-### Step 1: Configure Environment Variables
-
-Set the variables used by the AWS CLI commands.
-
-```bash
-export AWS_REGION="ap-southeast-2"
-export BUCKET_NAME="weintern-task3-s3-swapnaadhav"
-export PROJECT="WeIntern-Internship"
-export TASK="Task3"
-export ENVIRONMENT="Learning"
-export OWNER="SwapnaAdhav"
-```
-
-Verify the variables:
-
-```bash
-echo "$AWS_REGION"
-echo "$BUCKET_NAME"
-```
+**Security note:** Do not store AWS access keys or secret keys in this README or commit them to GitHub.
 
 ### Step 2: Create the S3 Bucket
 
-Create the S3 bucket in the Sydney region.
+Create the S3 bucket in the `ap-southeast-2` region.
 
 ```bash
 aws s3api create-bucket \
-  --bucket "$BUCKET_NAME" \
-  --region "$AWS_REGION" \
-  --create-bucket-configuration LocationConstraint="$AWS_REGION"
+  --bucket weintern-task3-s3-swapnaadhav \
+  --region ap-southeast-2 \
+  --create-bucket-configuration LocationConstraint=ap-southeast-2
 ```
 
-**Result:** The bucket `weintern-task3-s3-swapnaadhav` was created.
+> Run this command only if the bucket does not already exist and you have permission to create it. S3 bucket names must be globally unique.
 
 ### Step 3: Block Public Access
 
-Configure all four S3 Block Public Access settings.
+Keep all four S3 Block Public Access settings enabled.
 
 ```bash
 aws s3api put-public-access-block \
-  --bucket "$BUCKET_NAME" \
-  --region "$AWS_REGION" \
+  --bucket weintern-task3-s3-swapnaadhav \
   --public-access-block-configuration \
-  'BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true'
+  "BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true"
 ```
 
 Verify the settings:
 
 ```bash
 aws s3api get-public-access-block \
-  --bucket "$BUCKET_NAME" \
-  --region "$AWS_REGION"
+  --bucket weintern-task3-s3-swapnaadhav
 ```
 
-**Verified result:** All four settings returned `true`.
+### Step 4: Upload the Website
 
-This configuration helps prevent accidental public access to the bucket.
-
-### Step 4: Add Bucket Tags
-
-Apply tags to identify the project and its owner.
-
-```bash
-aws s3api put-bucket-tagging \
-  --bucket "$BUCKET_NAME" \
-  --region "$AWS_REGION" \
-  --tagging 'TagSet=[
-    {Key=Project,Value=WeIntern-Internship},
-    {Key=Task,Value=Task3},
-    {Key=Environment,Value=Learning},
-    {Key=Owner,Value=SwapnaAdhav}
-  ]'
-```
-
-Verify the tags:
-
-```bash
-aws s3api get-bucket-tagging \
-  --bucket "$BUCKET_NAME" \
-  --region "$AWS_REGION"
-```
-
-### Step 5: Upload the Website
-
-Navigate to the project directory.
-
-```bash
-cd ~/weintern-cloud-internship/task3-static-website
-```
-
-Upload `index.html` to S3.
+Upload the `index.html` file to the S3 bucket.
 
 ```bash
 aws s3 cp index.html \
-  "s3://$BUCKET_NAME/index.html" \
-  --region "$AWS_REGION" \
-  --content-type "text/html"
+  s3://weintern-task3-s3-swapnaadhav/index.html \
+  --content-type text/html
 ```
 
-Verify the uploaded object:
+Check that the file exists:
 
 ```bash
 aws s3api head-object \
-  --bucket "$BUCKET_NAME" \
-  --key index.html \
-  --region "$AWS_REGION"
+  --bucket weintern-task3-s3-swapnaadhav \
+  --key index.html
 ```
 
-**Verified results:**
+The object metadata should identify the content type as `text/html`. The recorded verification also showed AES256 server-side encryption.
 
-- Content type: `text/html`
-- Server-side encryption: `AES256`
-- Object key: `index.html`
+### Step 5: Configure Amazon CloudFront
 
-### Step 6: Configure CloudFront Origin Access Control
+Create or configure a CloudFront distribution with the following settings:
 
-An Origin Access Control was created to let CloudFront access the private S3 origin.
+- **Origin:** The S3 bucket's REST endpoint.
+- **Origin access:** Origin Access Control (OAC).
+- **Default root object:** `index.html`.
+- **Viewer protocol policy:** Redirect HTTP to HTTPS.
+- **Allowed methods:** GET and HEAD for a basic static website.
+- **Origin security:** Keep the S3 bucket private and configure its bucket policy to allow the intended CloudFront distribution to read the required objects.
 
-**OAC ID:** `E2M1DLNO7XA6O4`
+The distribution used in this project is:
 
-The S3 origin used by the distribution is:
+- **Distribution ID:** `EAGMUDC8KCZVQ`
+- **CloudFront domain:** `dwpuiw40xj1jx.cloudfront.net`
+- **OAC ID:** `E2M1DLNO7XA6O4`
 
-```text
-weintern-task3-s3-swapnaadhav.s3.ap-southeast-2.amazonaws.com
-```
+**Important:** Confirm these settings in the AWS Console before assuming the configuration is complete. The distribution and OAC IDs alone do not prove that the S3 origin, OAC association, and bucket policy are all correct.
 
-OAC provides authenticated origin access without making the bucket public.
-
-### Step 7: Create the CloudFront Distribution
-
-The CloudFront distribution was configured with the following settings:
-
-- Default root object: `index.html`
-- Viewer protocol policy: `redirect-to-https`
-- Allowed methods: `GET` and `HEAD`
-- Compression: enabled
-- Price class: `PriceClass_100`
-- CloudFront default certificate: enabled
-- HTTP/2: enabled
-- IPv6: enabled
-- Origin: the S3 bucket's REST endpoint
-- Origin access: OAC
-
-The distribution was created successfully.
-
-**Distribution ID:**
-
-```text
-EAGMUDC8KCZVQ
-```
-
-**Distribution ARN:**
-
-```text
-arn:aws:cloudfront::230623977579:distribution/EAGMUDC8KCZVQ
-```
-
-**CloudFront Domain:**
-
-```text
-dwpuiw40xj1jx.cloudfront.net
-```
-
-### Step 8: Configure the S3 Bucket Policy
-
-The bucket policy allows CloudFront to read objects from the bucket.
-
-The policy uses the CloudFront service principal and restricts access to the specific distribution ARN.
-
-The key permissions are:
-
-- Principal: `cloudfront.amazonaws.com`
-- Action: `s3:GetObject`
-- Resource: `arn:aws:s3:::weintern-task3-s3-swapnaadhav/*`
-- Condition: the request must originate from the specified CloudFront distribution.
-
-Validate the JSON file:
-
-```bash
-python3 -m json.tool bucket-policy.json
-```
-
-**Security note:** Keep all four S3 Block Public Access settings enabled. Do not make the bucket public as a workaround for access errors.
-
-### Step 9: Verify CloudFront Deployment
+### Step 6: Verify the CloudFront Distribution
 
 Check the distribution status:
 
@@ -321,26 +179,56 @@ aws cloudfront get-distribution \
   --output text
 ```
 
-**Verified result:**
+A status of `Deployed` means that the distribution configuration has finished deploying.
 
-```text
-Deployed
+Check the default root object:
+
+```bash
+aws cloudfront get-distribution \
+  --id EAGMUDC8KCZVQ \
+  --query 'Distribution.DistributionConfig.DefaultRootObject' \
+  --output text
 ```
 
-### Step 10: Upload Website Updates
+The expected value for this project is:
 
-Whenever you modify `index.html`, upload it again:
+```text
+index.html
+```
+
+### Step 7: Test the Website
+
+Open the CloudFront domain in a web browser:
+
+**Website URL:** https://dwpuiw40xj1jx.cloudfront.net/
+
+Or test it from the terminal:
+
+```bash
+curl -I https://dwpuiw40xj1jx.cloudfront.net/
+```
+
+The recorded test returned:
+
+```text
+HTTP/2 200
+```
+
+An HTTP `200` response indicates that the request succeeded at the time of testing.
+
+---
+
+## 🔄 Updating Website Content
+
+After changing `index.html`, upload the updated file:
 
 ```bash
 aws s3 cp index.html \
   s3://weintern-task3-s3-swapnaadhav/index.html \
-  --region ap-southeast-2 \
-  --content-type "text/html"
+  --content-type text/html
 ```
 
-### Step 11: Invalidate the CloudFront Cache
-
-Request an invalidation so CloudFront refreshes cached website content.
+To request a CloudFront cache refresh, create an invalidation:
 
 ```bash
 aws cloudfront create-invalidation \
@@ -348,234 +236,85 @@ aws cloudfront create-invalidation \
   --paths "/*"
 ```
 
-The recorded invalidation requests initially returned `InProgress`.
-
-To check the final status, use the invalidation ID returned by the command:
+Check the invalidation status:
 
 ```bash
-aws cloudfront get-invalidation \
-  --distribution-id EAGMUDC8KCZVQ \
-  --id YOUR_INVALIDATION_ID \
-  --query 'Invalidation.Status' \
-  --output text
+aws cloudfront list-invalidations \
+  --distribution-id EAGMUDC8KCZVQ
 ```
 
-Replace `YOUR_INVALIDATION_ID` with the actual ID.
+Wait until the invalidation status is `Completed` before considering the cache refresh finished.
 
-### Step 12: Verify the Website URL
+---
 
-Retrieve the CloudFront domain:
+## 🔐 Security Best Practices
 
-```bash
-aws cloudfront get-distribution \
-  --id EAGMUDC8KCZVQ \
-  --query 'Distribution.DomainName' \
-  --output text
+- Keep S3 Block Public Access enabled.
+- Use Origin Access Control with the CloudFront S3 origin.
+- Ensure the S3 bucket policy grants read access only to the intended CloudFront distribution.
+- Use HTTPS for website visitors.
+- Follow the principle of least privilege when assigning IAM permissions.
+- Never commit AWS access keys, secret keys, passwords, or session tokens to GitHub.
+- Avoid including AWS account identifiers or personal details in public documentation unless required.
+- Review CloudFront access logs and AWS resource settings when necessary.
+
+---
+
+## 🧰 Troubleshooting
+
+| Problem | Possible Cause | Suggested Solution |
+|---|---|---|
+| `403 Forbidden` | Incorrect S3 bucket policy or CloudFront origin configuration | Verify the OAC association and bucket policy. |
+| `404 Not Found` | Missing `index.html` or incorrect default root object | Check the S3 object key and CloudFront default root object. |
+| Old website content appears | CloudFront cached the previous version | Create an invalidation and wait for completion. |
+| CloudFront status is not `Deployed` | Distribution changes are still being applied | Check the distribution status again later. |
+| AWS CLI access denied | IAM permissions are insufficient | Review the IAM permissions for the required operation. |
+| Direct S3 access is denied | The bucket is private | Access the website through CloudFront and verify OAC configuration. |
+
+---
+
+## 📂 Repository Structure
+
+```text
+Weintern-Internship/
+├── README.md
+└── index.html
 ```
 
-Check the website response:
+The repository may contain additional files depending on the final project structure.
 
-```bash
-curl -I https://dwpuiw40xj1jx.cloudfront.net/
-```
+---
 
-**Verified result:** The endpoint returned `HTTP/2 200`.
+## 📈 Learning Outcomes
 
-Open the website:
+Through this project, I learned how to:
 
-https://dwpuiw40xj1jx.cloudfront.net/
+- Store and manage static website files using Amazon S3.
+- Configure and verify S3 Block Public Access.
+- Understand the role of CloudFront in content delivery.
+- Understand Origin Access Control and private S3 origins.
+- Use AWS CLI commands to inspect AWS resources.
+- Test a website using HTTP response headers.
+- Manage website updates and CloudFront cache invalidations.
+- Document cloud deployment steps using Markdown and GitHub.
 
-### Step 13: Validate the HTML File
+---
 
-A basic HTML parser check can be performed using Python:
+## 🏁 Conclusion
 
-```bash
-python3 - <<'PY'
-from html.parser import HTMLParser
-from pathlib import Path
+This project demonstrates the deployment of a static website using Amazon S3 and Amazon CloudFront. The website content is stored in S3, while CloudFront provides a distribution endpoint for accessing the content.
 
-class Validator(HTMLParser):
-    pass
+The recorded deployment reached the `Deployed` status, and the website endpoint returned an HTTP `200` response during testing. The S3 object metadata also showed the expected HTML content type and AES256 encryption.
 
-html = Path("index.html").read_text(encoding="utf-8")
-Validator().feed(html)
-print("HTML parser completed without a syntax error.")
-PY
-```
+For a secure final configuration, verify that the CloudFront distribution uses the intended S3 origin and OAC, and that the bucket policy restricts access appropriately.
 
-This checks whether Python's HTML parser can process the file. It is not a complete accessibility or browser-compatibility test.
+---
 
-## 8. Validation Results
+## 👩‍💻 Author
 
-| Validation | Result |
-|---|---|
-| AWS identity | Verified |
-| AWS region | `ap-southeast-2` |
-| S3 public access block | All four settings enabled |
-| S3 bucket tags | Verified |
-| Website uploaded | Verified |
-| Content type | `text/html` |
-| Server-side encryption | `AES256` |
-| CloudFront status | `Deployed` |
-| HTTPS response | `HTTP/2 200` observed |
-| CloudFront invalidation | Requested; initially `InProgress` |
+**Swapna Adhav**
 
-## 9. GitHub Repository Setup
+Cloud Internship Project – WeIntern
 
-The project repository is:
-
-https://github.com/adhavswapna/Weintern-Internship
-
-Navigate to the project directory:
-
-```bash
-cd ~/weintern-cloud-internship/task3-static-website
-```
-
-Check Git status:
-
-```bash
-git status
-```
-
-Check the configured remote:
-
-```bash
-git remote -v
-```
-
-If `origin` already exists but points to the wrong repository, update it:
-
-```bash
-git remote set-url origin \
-  https://github.com/adhavswapna/Weintern-Internship.git
-```
-
-If no `origin` remote exists, add it:
-
-```bash
-git remote add origin \
-  https://github.com/adhavswapna/Weintern-Internship.git
-```
-
-Create a `.gitignore` file:
-
-```bash
-cat > .gitignore <<'EOF'
-.env
-.env.*
-*.pem
-.DS_Store
-EOF
-```
-
-Review the files before committing:
-
-```bash
-git status
-```
-
-Stage the website and documentation:
-
-```bash
-git add index.html README.md .gitignore
-```
-
-Commit:
-
-```bash
-git commit -m "Document AWS static website deployment"
-```
-
-Push to GitHub:
-
-```bash
-git push -u origin main
-```
-
-### GitHub Authentication
-
-GitHub does not accept a normal account password for HTTPS Git operations.
-
-Use one of these methods:
-
-- Git Credential Manager or browser authentication.
-- A fine-grained Personal Access Token with access to the correct repository and `Contents: Read and write`.
-- SSH authentication using an SSH key registered with GitHub.
-
-Never share your token or commit it to the repository.
-
-If GitHub rejects the push because the remote already contains commits, inspect the repository history and reconcile it before pushing. Do not force-push automatically.
-
-## 10. Security Considerations
-
-- S3 Block Public Access remains enabled.
-- CloudFront accesses the origin through OAC.
-- The bucket policy restricts object reads to the intended distribution.
-- Viewer requests are redirected to HTTPS.
-- The uploaded object was observed to use AES256 server-side encryption.
-- AWS credentials and GitHub tokens must never be committed.
-- Consider enabling S3 versioning if recovery of older files is required.
-- Review AWS costs before leaving cloud resources running.
-
-## 11. Troubleshooting
-
-### Error: 403 Forbidden
-
-Check that:
-
-- CloudFront is deployed.
-- OAC is attached to the correct S3 origin.
-- The bucket policy contains the correct distribution ARN.
-- `index.html` exists in S3.
-- The CloudFront distribution is configured for the correct origin.
-
-Do not make the bucket public to resolve this error.
-
-### Error: 404 Not Found
-
-Check that:
-
-- The uploaded object key is `index.html`.
-- The default root object is `index.html`.
-- The CloudFront origin points to the correct bucket.
-
-### Website Updates Are Not Visible
-
-Upload the updated file, create a CloudFront invalidation, and wait for it to complete.
-
-### GitHub Authentication Failed
-
-Do not use the normal GitHub account password. Check the token's expiration, repository access, and `Contents: Read and write` permission.
-
-## 12. Optional Cleanup
-
-**Warning:** The following commands delete the S3 website files and bucket. Only run them if you no longer need the deployment.
-
-```bash
-aws s3 rm s3://weintern-task3-s3-swapnaadhav \
-  --recursive \
-  --region ap-southeast-2
-```
-
-Then delete the bucket:
-
-```bash
-aws s3api delete-bucket \
-  --bucket weintern-task3-s3-swapnaadhav \
-  --region ap-southeast-2
-```
-
-CloudFront must be disabled and the configuration update fully deployed before the distribution can be deleted. Follow the current AWS CLI procedure for CloudFront deletion.
-
-## 13. Conclusion
-
-The static website was uploaded to Amazon S3 and distributed through Amazon CloudFront over HTTPS.
-
-S3 public access blocking remained enabled, and CloudFront OAC together with a scoped bucket policy provided controlled access to the private S3 origin.
-
-The CloudFront distribution reached `Deployed` status, and the live HTTPS endpoint returned `HTTP/2 200`.
-
-**Live Website:** https://dwpuiw40xj1jx.cloudfront.net/
-
-**GitHub Repository:** https://github.com/adhavswapna/Weintern-Internship
+**GitHub Repository:**  
+https://github.com/adhavswapna/Weintern-Internship.git
