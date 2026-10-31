@@ -26,4 +26,7 @@ venv/
 *.tmp
 *.bak
 index-backup.html
-task3-static-website/.git-backup/
+
+# Git backup directories
+.git-backup/
+**/.git-backup/
