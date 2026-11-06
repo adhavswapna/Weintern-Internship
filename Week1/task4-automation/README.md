@@ -19,7 +19,8 @@ This project demonstrates cloud automation using Python, Bash, and the AWS CLI. 
 |---|---|
 | AWS Region | Sydney (`ap-southeast-2`) |
 | Tag Key | `Name` |
-| Tag Value | `weintern-dev-ec2` |
+| Tag Value | `weintern-dev-ec2-secure` |
+| Instance Type | `t3.micro` |
 | Monthly Hours | 730 hours |
 | Currency | USD |
 
@@ -31,11 +32,11 @@ The Python script uses the AWS CLI to retrieve running EC2 instances in the conf
 
 Features:
 - Retrieves running EC2 instances.
-- Filters instances using the `Name=weintern-dev-ec2` tag.
+- Filters instances using the `Name=weintern-dev-ec2-secure` tag.
 - Displays the EC2 instance ID and instance type.
 - Estimates monthly compute costs for supported instance types.
 - Calculates the total estimated monthly cost.
-- Handles AWS CLI errors and invalid JSON responses.
+- Uses Python's `subprocess` and `json` modules to execute AWS CLI commands and process the response.
 
 ### 2. `ec2_cost_estimator.sh`
 
@@ -91,7 +92,7 @@ The estimate excludes EBS storage, data transfer, taxes, and other applicable AW
 Navigate to the project directory:
 
 ```bash
-cd ~/weintern-cloud-internship/task4-automation
+cd ~/weintern-cloud-internship/Week1/task4-automation
 ```
 
 ### Run the Python Script
@@ -133,14 +134,16 @@ aws ec2 describe-instances \
   --region ap-southeast-2 \
   --filters \
     "Name=instance-state-name,Values=running" \
-    "Name=tag:Name,Values=weintern-dev-ec2" \
+    "Name=tag:Name,Values=weintern-dev-ec2-secure" \
   --query 'Reservations[].Instances[].[InstanceId,InstanceType]' \
   --output table
 ```
 
 ## Test Results
 
-The scripts report the matching running EC2 instances and their estimated monthly costs.
+The scripts report matching running EC2 instances and their estimated monthly costs.
+
+For the configured `t3.micro` instance, the illustrative monthly compute estimate is approximately **$7.59 USD**, assuming 730 running hours.
 
 If no running instances match the configured Name tag, the scripts display a message indicating that no matching instances were found and report a total estimated monthly cost of $0.00 USD.
 
@@ -154,4 +157,4 @@ The cost calculations are illustrative estimates and should not be treated as of
 
 ## Conclusion
 
-Task 4 demonstrates basic cloud automation using AWS CLI, Python, and Bash. Both scripts filter running EC2 instances by a specified tag and calculate illustrative monthly compute costs for supported instance types.
+Task 4 demonstrates basic cloud automation using AWS CLI, Python, and Bash. Both scripts filter running EC2 instances by a specified Name tag and calculate illustrative monthly compute costs for supported instance types.

@@ -7,7 +7,7 @@
 
 REGION="ap-southeast-2"
 TAG_KEY="Name"
-TAG_VALUE="weintern-dev-ec2"
+TAG_VALUE="weintern-dev-ec2-secure"
 
 echo "EC2 Cost Estimator"
 echo "------------------"
