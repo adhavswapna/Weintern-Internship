@@ -88,15 +88,11 @@ The operating system package manager was used to update the system.
 
 For Amazon Linux 2023:
 
-```bash
+``bash
 sudo dnf update -y
 ```
 
-For Amazon Linux 2:
 
-```bash
-sudo yum update -y
-```
 
 To identify the Amazon Linux version:
 
@@ -116,11 +112,6 @@ For Amazon Linux 2023:
 sudo dnf install nginx -y
 ```
 
-For Amazon Linux 2:
-
-```bash
-sudo amazon-linux-extras install nginx1 -y
-```
 
 Start the Nginx service:
 
