@@ -2,13 +2,15 @@
 
 A secure, scalable, highly available, and cost-optimized three-tier e-commerce architecture designed using Amazon Web Services (AWS).
 
+---
+
 ## 1. Project Overview
 
-The objective of this project is to design a production-oriented cloud architecture for an e-commerce web application using AWS services.
+The objective of this project is to design a production-oriented cloud architecture for an e-commerce web application using Amazon Web Services (AWS).
 
-The architecture follows a three-tier model:
+The proposed architecture follows a three-tier model:
 
-1. **Presentation Tier** – Delivers the website interface and static content.
+1. **Presentation Tier** – Delivers the website interface and static content to customers.
 2. **Application Tier** – Processes customer requests and application business logic.
 3. **Data Tier** – Stores customer, product, shopping cart, and order information.
 
@@ -17,79 +19,96 @@ The architecture focuses on security, high availability, scalability, performanc
 ## 2. Project Objectives
 
 - Design a secure three-tier AWS architecture.
-- Deploy network infrastructure using Amazon VPC.
+- Create network infrastructure using Amazon VPC.
 - Distribute resources across two Availability Zones.
-- Implement load balancing using Application Load Balancer.
-- Configure EC2 Auto Scaling for application scalability.
-- Use Amazon RDS Multi-AZ for database availability.
-- Store static website content using Amazon S3.
+- Configure an Application Load Balancer.
+- Deploy EC2 instances in private application subnets.
+- Implement EC2 Auto Scaling.
+- Use Amazon RDS PostgreSQL with Multi-AZ deployment.
+- Store static content using Amazon S3.
 - Deliver content using Amazon CloudFront.
-- Implement security using AWS WAF, Shield, Security Groups, and IAM roles.
-- Configure NAT Gateways for private subnet outbound connectivity.
+- Implement security using AWS WAF, Shield, Security Groups, and IAM.
+- Configure two NAT Gateways for private subnet connectivity.
 - Monitor infrastructure using Amazon CloudWatch.
 - Estimate monthly infrastructure costs using AWS Pricing Calculator.
 
 ## 3. Application Scenario
 
-**Application:** E-Commerce Website  
-**Cloud Provider:** Amazon Web Services (AWS)  
-**AWS Region:** Asia Pacific (Mumbai) – `ap-south-1`  
-**Availability Zones:** Two Availability Zones
+| Item | Details |
+|---|---|
+| Application | E-Commerce Website |
+| Cloud Provider | Amazon Web Services |
+| AWS Region | Asia Pacific (Mumbai) |
+| Region Code | `ap-south-1` |
+| Availability Zones | 2 |
+| Architecture | Three-Tier Architecture |
+| Database | PostgreSQL |
 
-The application allows customers to:
+### Application Features
 
-- Browse products.
+The e-commerce application allows customers to:
+
+- Browse available products.
 - View product details and images.
-- Add products to shopping carts.
 - Register and log in.
+- Add products to shopping carts.
 - Place orders.
 - Store customer and order information.
 
-The infrastructure is designed to support changing traffic levels while maintaining application security and availability.
-
 ## 4. Architecture Overview
 
-The infrastructure is deployed inside an Amazon VPC across two Availability Zones.
+The infrastructure is deployed inside an Amazon VPC across two Availability Zones in the Mumbai region.
 
-### 4.1 Application Request Flow
+The architecture uses AWS networking, compute, storage, database, security, and monitoring services.
 
-The logical application traffic flow is:
+### 4.1 Dynamic Application Request Flow
 
-**Customers → Internet → Amazon Route 53 → Amazon CloudFront → AWS WAF → Application Load Balancer → Target Group → EC2 Auto Scaling Group → Amazon RDS**
+The logical request flow is:
 
-Route 53 performs DNS resolution, while CloudFront delivers cached content and forwards dynamic requests to the configured application origin.
+**Customer → Internet → Route 53 (DNS Resolution) → CloudFront → AWS WAF → Application Load Balancer → Target Group → EC2 Instances → Amazon RDS**
 
-AWS WAF inspects incoming web requests.
+- **Amazon Route 53:** Resolves the application domain name and directs users to CloudFront.
+- **Amazon CloudFront:** Delivers content through globally distributed edge locations.
+- **AWS WAF:** Inspects and filters incoming web requests according to configured security rules.
+- **Application Load Balancer:** Distributes application traffic across healthy EC2 instances.
+- **Target Group:** Registers EC2 instances and performs health checks.
+- **Amazon EC2:** Processes application requests and business logic.
+- **Amazon RDS:** Stores application data.
 
-The Application Load Balancer distributes dynamic application traffic across healthy EC2 instances.
+AWS WAF is associated with CloudFront to inspect incoming viewer requests. The Internet Gateway provides VPC connectivity for the public-facing ALB; it is not an application-layer step in the request flow.
 
 ### 4.2 Static Content Delivery
 
-Amazon S3 stores static website assets and product images.
+Amazon S3 stores static website files and product images.
 
-CloudFront delivers these files through its globally distributed edge locations.
+CloudFront delivers static content through globally distributed edge locations.
 
-CloudFront Origin Access Control (OAC) provides secure access to the private S3 bucket.
+CloudFront Origin Access Control (OAC) allows CloudFront to access the private S3 bucket without making the bucket publicly accessible.
+
+**Static content flow:**
+
+**Customer → Route 53 → CloudFront → Private Amazon S3 Bucket (using OAC)**
 
 ### 4.3 Architecture Components
 
 | Tier | AWS Services | Purpose |
 |---|---|---|
-| Presentation Tier | Route 53, CloudFront, S3, AWS WAF | DNS management, security filtering, and static content delivery |
-| Application Tier | Application Load Balancer, Target Group, EC2, Auto Scaling | Traffic distribution and application processing |
-| Data Tier | Amazon RDS PostgreSQL Multi-AZ | Database storage and management |
-| Network Infrastructure | VPC, Internet Gateway, NAT Gateways, Subnets | Network isolation and connectivity |
-| Security and Monitoring | AWS Shield, IAM, Security Groups, CloudWatch | Security, access control, and monitoring |
+| Presentation | Route 53, CloudFront, S3, WAF | DNS resolution, content delivery, and web security |
+| Application | ALB, Target Group, EC2, Auto Scaling | Traffic distribution and application processing |
+| Data | Amazon RDS PostgreSQL | Database storage |
+| Networking | VPC, Subnets, IGW, NAT Gateways | Network connectivity |
+| Security | Shield, IAM, Security Groups | Infrastructure and access protection |
+| Monitoring | Amazon CloudWatch | Metrics, logs, alarms, and performance monitoring |
 
-## 5. AWS Services and Their Benefits
+## 5. AWS Services and Configuration
 
 ### 5.1 Amazon VPC
 
 Amazon Virtual Private Cloud provides an isolated network environment for deploying AWS resources.
 
 **Configuration:**
-- One VPC.
-- CIDR block: `10.0.0.0/16`.
+
+- VPC CIDR: `10.0.0.0/16`
 - Two Availability Zones.
 - Two public subnets.
 - Two private application subnets.
@@ -97,153 +116,173 @@ Amazon Virtual Private Cloud provides an isolated network environment for deploy
 - One Internet Gateway.
 - Two NAT Gateways.
 
-**Key Benefits:**
+**Benefits:**
+
 - Network isolation.
 - Improved security.
 - Controlled communication between application tiers.
-- High availability across Availability Zones.
+- Availability across two Availability Zones.
 
 ### 5.2 Internet Gateway
 
-An Internet Gateway enables communication between the VPC and the Internet.
+An Internet Gateway connects the VPC to the Internet.
 
 **Purpose:**
-- Provides Internet connectivity to public subnets.
-- Allows the internet-facing Application Load Balancer to receive incoming requests.
-- Supports Internet connectivity for public-facing AWS resources.
 
-**Key Benefits:**
-- Enables communication between the VPC and the Internet.
-- Supports public application access.
+- Provides Internet connectivity to public subnets.
+- Allows the internet-facing Application Load Balancer to receive incoming traffic.
+- Supports communication between public resources and the Internet.
 
 ### 5.3 NAT Gateways
 
 Two NAT Gateways are deployed, one in each Availability Zone.
 
 **Configuration:**
-- NAT Gateway 1 in Public Subnet 1.
-- NAT Gateway 2 in Public Subnet 2.
-- Private application subnets use the NAT Gateway in their respective Availability Zones.
 
-**Purpose:**
-- Allows private EC2 instances to access the Internet for software updates.
-- Supports outbound communication with external services.
-- Prevents unsolicited inbound Internet connections to private instances.
+| NAT Gateway | Placement |
+|---|---|
+| NAT Gateway 1 | Public Subnet 1 – AZ-A |
+| NAT Gateway 2 | Public Subnet 2 – AZ-B |
 
-**Key Benefits:**
-- Provides outbound Internet connectivity.
-- Improves network availability.
+Each private application subnet uses the NAT Gateway in its respective Availability Zone.
+
+**Benefits:**
+
+- Allows private EC2 instances to access the Internet for outbound connections.
+- Supports software updates and external service communication.
+- Prevents unsolicited inbound Internet connections.
 - Reduces dependency on a single NAT Gateway.
+
+NAT Gateways incur hourly and data-processing charges.
 
 ### 5.4 Amazon Route 53
 
-Amazon Route 53 is an AWS DNS service that translates domain names into IP addresses or routes users to application endpoints.
+Amazon Route 53 is an AWS DNS service.
 
-**Key Benefits:**
+**Benefits:**
+
 - Domain name resolution.
-- Reliable DNS routing.
+- DNS routing.
 - Health-check-based routing options.
+- Integration with CloudFront.
+
+Route 53 resolves the application domain name and directs users to the CloudFront distribution.
 
 ### 5.5 Amazon CloudFront
 
 Amazon CloudFront is an AWS Content Delivery Network (CDN).
 
-It delivers website content through globally distributed edge locations.
+**Benefits:**
 
-**Key Benefits:**
 - Faster content delivery.
 - Reduced latency.
 - Improved website performance.
-- Reduced repeated requests to origin servers.
+- Reduced origin requests through caching.
+- Integration with AWS WAF.
+
+CloudFront uses Amazon S3 for static content and the Application Load Balancer for dynamic application requests.
 
 ### 5.6 Amazon S3
 
 Amazon Simple Storage Service provides scalable object storage.
 
 **Used to store:**
+
 - HTML files.
 - CSS files.
 - JavaScript files.
 - Product images.
 - Logos and static assets.
 
-The S3 bucket remains private, with CloudFront Origin Access Control (OAC) configured for authorized access.
+The S3 bucket remains private and uses CloudFront Origin Access Control (OAC).
 
-**Key Benefits:**
-- Highly durable storage.
-- Scalability.
-- Secure storage of static assets.
+**Benefits:**
+
+- Durable object storage.
+- Scalable storage capacity.
+- Secure content delivery through CloudFront.
+- Reduced load on application servers.
 
 ### 5.7 AWS WAF
 
-AWS Web Application Firewall protects web applications by inspecting incoming HTTP/HTTPS requests.
+AWS Web Application Firewall protects web applications by inspecting HTTP and HTTPS requests.
 
-In this architecture, WAF is associated with the CloudFront distribution.
+**Benefits:**
 
-**Key Benefits:**
-- Helps block SQL injection attempts.
+- Helps protect against SQL injection.
 - Helps protect against cross-site scripting (XSS).
 - Filters malicious web requests.
-- Provides configurable security rules.
+- Supports configurable security rules.
+- Can be associated with CloudFront.
 
 ### 5.8 AWS Shield Standard
 
-AWS Shield Standard provides protection against common Distributed Denial of Service (DDoS) attacks.
+AWS Shield Standard provides basic protection against common Distributed Denial of Service (DDoS) attacks.
 
-**Key Benefits:**
+**Benefits:**
+
 - Basic DDoS protection.
-- Helps protect supported AWS resources.
+- Protection for supported AWS resources.
 - Included at no additional charge.
 
 ### 5.9 Application Load Balancer (ALB)
 
-The Application Load Balancer distributes incoming HTTP/HTTPS traffic across healthy application servers.
-
-It operates at Layer 7 of the OSI model.
+The Application Load Balancer distributes incoming application traffic across healthy EC2 instances.
 
 **Configuration:**
-- Internet-facing ALB.
+
+- One internet-facing ALB.
 - Deployed across two public subnets.
-- HTTPS listener on port 443.
-- Target group containing EC2 instances.
+- HTTPS listener on port `443`.
+- Target group connected to EC2 instances.
 - Health checks enabled.
 
-**Key Benefits:**
+**Benefits:**
+
 - Traffic distribution.
 - Improved application availability.
 - Health-based routing.
-- Support for multiple Availability Zones.
+- Multi-AZ support.
 
 ### 5.10 Target Group
 
-A Target Group is a collection of registered targets that receive traffic from the load balancer.
+The Target Group connects the Application Load Balancer to EC2 instances.
 
-In this architecture, EC2 instances are registered as targets.
+**Benefits:**
 
-**Key Benefits:**
-- Connects ALB to application servers.
+- Registers application servers.
 - Performs health checks.
-- Routes traffic to healthy instances.
+- Routes traffic to healthy targets.
+- Supports integration with Auto Scaling.
+
+The application servers listen on port `8080` in this design.
 
 ### 5.11 Amazon EC2
 
-Amazon Elastic Compute Cloud provides virtual servers to run application workloads.
+Amazon Elastic Compute Cloud provides virtual servers for application workloads.
 
 **Configuration:**
-- Linux-based EC2 instances.
-- Deployed in private application subnets.
-- Distributed across two Availability Zones.
-- Receives application traffic from the ALB.
-- No direct public Internet access.
 
-**Key Benefits:**
-- Flexible computing capacity.
-- Supports application workloads.
-- Scalable infrastructure.
+| Setting | Configuration |
+|---|---|
+| Instance Type | `t2.micro` |
+| Operating System | Linux |
+| Initial Instance Count | 2 |
+| Deployment | Private Application Subnets |
+| Availability Zones | 2 |
+| Application Port | 8080 |
+| Access | Through Application Load Balancer |
+
+**Benefits:**
+
+- Runs application workloads.
+- Provides flexible computing capacity.
+- Supports scalable application deployment.
+- Keeps application servers private.
 
 ### 5.12 EC2 Auto Scaling
 
-EC2 Auto Scaling automatically adjusts the number of instances based on configured scaling policies.
+EC2 Auto Scaling automatically adjusts the number of instances based on configured scaling policies and health checks.
 
 **Example Configuration:**
 
@@ -253,239 +292,315 @@ EC2 Auto Scaling automatically adjusts the number of instances based on configur
 | Desired Capacity | 2 |
 | Maximum Capacity | 4 |
 
-These are proposed design assumptions and should be validated against workload requirements.
+**Benefits:**
 
-**Key Benefits:**
-- Automatically increases capacity.
-- Reduces capacity when demand decreases.
+- Automatically increases capacity when demand increases.
 - Replaces unhealthy instances.
-- Helps optimize compute costs.
+- Reduces capacity when demand decreases, subject to minimum capacity.
+- Helps optimize computing costs.
+
+The two EC2 instances represent the initial desired capacity. Auto Scaling can increase the number of instances up to four when required.
 
 ### 5.13 Amazon RDS for PostgreSQL
 
 Amazon Relational Database Service (RDS) is a managed relational database service.
 
-PostgreSQL is selected for storing structured e-commerce information.
+PostgreSQL is selected to store structured e-commerce information.
+
+**Configuration:**
+
+| Setting | Configuration |
+|---|---|
+| Database Engine | PostgreSQL |
+| Instance Class | `db.t3.micro` (cost estimate assumption) |
+| Deployment | Multi-AZ |
+| Database Subnets | Private Database Subnets |
+| Availability Zones | 2 |
+| Automated Backups | Enabled |
+| Encryption | Enabled |
 
 **Data Stored:**
+
 - Customer details.
 - Product information.
 - Shopping cart records.
 - Order information.
 - Transaction records.
 
-**Configuration:**
-- Database engine: PostgreSQL.
-- Deployment: Multi-AZ.
-- Database subnet group across two Availability Zones.
-- Private database subnets.
-- Automated backups enabled.
-- Storage encryption enabled.
+**Benefits:**
 
-**Key Benefits:**
 - Managed database administration.
-- Automated backup support.
+- Automated backups.
 - Database monitoring.
-- High availability with Multi-AZ.
+- High availability with Multi-AZ deployment.
 
 ### 5.14 RDS Multi-AZ
 
-Multi-AZ maintains a standby database in another Availability Zone for supported configurations.
+RDS Multi-AZ maintains a standby database in another Availability Zone for supported configurations.
 
-If the primary database experiences a supported failure, RDS can automatically fail over to the standby database.
+If the primary database experiences a supported failure, Amazon RDS can automatically fail over to the standby database.
 
-**Key Benefits:**
+**Benefits:**
+
 - Improved database availability.
 - Automatic failover.
 - Reduced downtime during supported failures.
+- Improved database infrastructure resilience.
+
+The standby database is intended for failover and is not used for ordinary read scaling.
 
 ### 5.15 IAM Roles
 
-AWS Identity and Access Management controls permissions to AWS resources.
+AWS Identity and Access Management controls access to AWS resources.
 
-EC2 IAM roles provide application instances with temporary permissions to access required AWS services.
+EC2 IAM roles provide temporary permissions to application instances.
 
 **Examples:**
+
 - Access to required S3 resources.
 - CloudWatch logging permissions.
-- Systems Manager permissions, if required.
+- AWS Systems Manager permissions.
 
-**Key Benefits:**
+**Benefits:**
+
 - Secure access management.
-- No need to store long-term access keys on EC2.
+- No need for long-term access keys on EC2.
 - Least-privilege permissions.
+- Better control over AWS resource access.
 
 ### 5.16 Security Groups
 
 Security Groups act as virtual firewalls for AWS resources.
 
+**Security Group Configuration:**
+
 | Security Group | Port | Allowed Source |
 |---|---:|---|
-| ALB Security Group | 443 | Intended client traffic or restricted CloudFront origin traffic |
-| EC2 Security Group | 8080 | ALB Security Group only |
-| RDS Security Group | 5432 | EC2 Security Group only |
+| ALB Security Group | 443 | Intended client traffic |
+| EC2 Security Group | 8080 | ALB Security Group |
+| RDS Security Group | 5432 | EC2 Security Group |
 
 Only required traffic should be allowed between tiers.
 
-**Key Benefits:**
-- Controls inbound and outbound traffic.
-- Prevents unauthorized access.
-- Protects application and database resources.
+If CloudFront is intended to be the only public entry point, restrict direct access to the ALB origin using appropriate origin protection and security group rules.
 
 ### 5.17 Amazon CloudWatch
 
-Amazon CloudWatch monitors AWS resources and application performance.
+Amazon CloudWatch is an AWS monitoring and observability service used to monitor infrastructure and application performance.
 
-**Monitoring Metrics:**
-- EC2 CPU utilization.
-- ALB request count.
-- ALB response time.
-- Unhealthy target count.
-- RDS CPU utilization.
-- Database connections.
-- Application logs.
+**Monitoring Components:**
 
-**Key Benefits:**
+| AWS Resource | Monitoring Details |
+|---|---|
+| Application Load Balancer | Request count, response time, HTTP errors |
+| EC2 Instances | CPU utilization and status checks |
+| Auto Scaling Group | Scaling activities and instance health |
+| Amazon RDS | CPU utilization, database connections, and storage |
+| Application | Application logs and errors |
+
+**CloudWatch Features:**
+
+- CloudWatch Metrics – Collects infrastructure performance metrics.
+- CloudWatch Logs – Collects and stores application and system logs.
+- CloudWatch Alarms – Monitors configured thresholds and triggers notifications or actions.
+
+**Benefits:**
+
 - Infrastructure monitoring.
-- Log collection.
+- Log collection and analysis.
 - Performance tracking.
-- Configurable alarms and alerts.
+- Configurable alarms.
+- Early identification of potential issues.
+
+**Architecture Placement:**
+
+CloudWatch is a regional AWS service. It is placed inside the AWS Region boundary but outside the VPC boundary in the architecture diagram.
+
+It does not need to be deployed inside a public or private subnet.
+
+Dashed monitoring connections should connect CloudWatch to the ALB, EC2 instances, Auto Scaling Group, and RDS.
 
 ## 6. Network and Subnet Design
 
 The VPC is distributed across two Availability Zones in the Mumbai region.
 
-### 6.1 Subnet Configuration
+### 6.1 VPC and Subnet Configuration
 
 | Availability Zone | Subnet | CIDR Block | Purpose |
 |---|---|---|---|
-| AZ-A (`ap-south-1a`) | Public Subnet 1 | 10.0.1.0/24 | ALB and NAT Gateway 1 |
-| AZ-A (`ap-south-1a`) | Private App Subnet 1 | 10.0.11.0/24 | EC2 application instances |
-| AZ-A (`ap-south-1a`) | Private DB Subnet 1 | 10.0.21.0/24 | RDS database subnet group |
-| AZ-B (`ap-south-1b`) | Public Subnet 2 | 10.0.2.0/24 | ALB and NAT Gateway 2 |
-| AZ-B (`ap-south-1b`) | Private App Subnet 2 | 10.0.12.0/24 | EC2 application instances |
-| AZ-B (`ap-south-1b`) | Private DB Subnet 2 | 10.0.22.0/24 | RDS database subnet group |
+| AZ-A | Public Subnet 1 | `10.0.1.0/24` | ALB and NAT Gateway 1 |
+| AZ-A | Private App Subnet 1 | `10.0.11.0/24` | EC2 application server 1 |
+| AZ-A | Private DB Subnet 1 | `10.0.21.0/24` | RDS database subnet |
+| AZ-B | Public Subnet 2 | `10.0.2.0/24` | ALB and NAT Gateway 2 |
+| AZ-B | Private App Subnet 2 | `10.0.12.0/24` | EC2 application server 2 |
+| AZ-B | Private DB Subnet 2 | `10.0.22.0/24` | RDS database subnet |
+
+The AZ-A and AZ-B labels represent the two selected Availability Zones. Confirm the actual Availability Zone names available in the AWS account before deployment.
 
 ### 6.2 Network Traffic Flow
 
 | Source | Destination | Purpose |
 |---|---|---|
-| Internet | Internet Gateway | VPC Internet connectivity |
-| Internet Gateway | Public Subnets | Public resource connectivity |
-| Application Load Balancer | EC2 Instances | Application traffic |
-| EC2 Instances | NAT Gateways | Outbound Internet access |
-| EC2 Instances | Amazon RDS | Database communication |
+| Internet | Internet Gateway | Internet connectivity to the VPC |
+| CloudFront | Application Load Balancer | Dynamic application requests |
 | CloudFront | Amazon S3 | Static content delivery |
-| CloudFront | ALB | Dynamic application requests |
+| Application Load Balancer | EC2 Instances | Application traffic |
+| EC2 Instances | Amazon RDS | Database communication |
+| Private EC2 Subnets | NAT Gateways | Outbound Internet access |
+| CloudWatch | AWS Resources | Monitoring and log collection |
+
+CloudWatch monitoring is a logical monitoring relationship, not ordinary application traffic.
 
 ### 6.3 Routing Configuration
 
-- Public subnet route tables use the Internet Gateway for Internet-bound traffic.
-- Private application subnet route tables use their respective NAT Gateways for outbound Internet access.
-- Private database subnet route tables do not have direct Internet routes.
-- Application instances communicate with RDS through private network connectivity.
+**Public Subnet Route Tables:**
+
+- Local VPC traffic uses the local route.
+- Internet-bound traffic (`0.0.0.0/0`) routes through the Internet Gateway.
+
+**Private Application Subnet Route Tables:**
+
+- Local VPC traffic uses the local route.
+- Internet-bound traffic (`0.0.0.0/0`) routes through the NAT Gateway in the same Availability Zone.
+
+**Private Database Subnet Route Tables:**
+
+- Local VPC traffic uses the local route.
+- No direct default Internet route is configured.
+
+EC2 instances communicate with RDS through private network connectivity within the VPC.
 
 ## 7. Security Architecture
 
-Security is implemented through multiple layers.
+Security is implemented through multiple layers to protect the application, network, and database.
 
 | Security Component | Purpose |
 |---|---|
 | AWS WAF | Filters malicious web requests |
 | AWS Shield Standard | Provides basic DDoS protection |
 | Security Groups | Controls network traffic |
-| IAM Roles | Provides controlled AWS permissions |
-| Private Subnets | Protects internal resources from direct Internet access |
-| S3 OAC | Provides authorized CloudFront access to private S3 content |
+| IAM Roles | Controls AWS permissions |
+| Private Subnets | Protects internal resources |
+| S3 OAC | Secures S3 content access |
 | Encryption | Protects data at rest and in transit |
+| HTTPS | Secures communication between clients and the application |
 
-**Additional Security Recommendations:**
+### Additional Security Recommendations
+
 - Enable encryption at rest and in transit.
 - Do not expose RDS publicly.
 - Avoid opening SSH access to everyone.
 - Use least-privilege IAM policies.
 - Prefer Systems Manager Session Manager for EC2 administration.
-- Restrict ALB origin access to CloudFront when CloudFront is the intended public entry point.
-- Store database credentials securely using AWS Secrets Manager or another approved secrets-management solution.
+- Restrict ALB origin access when CloudFront is the intended public entry point.
+- Store database credentials securely.
+- Enable appropriate logging and monitoring.
+- Regularly review Security Group rules and IAM permissions.
 
 ## 8. High Availability and Scalability
 
-The architecture uses multiple AWS services to improve application availability and handle changing application demand.
+The architecture uses multiple AWS services to improve availability and support changing application demand.
 
 | AWS Component | High Availability / Scalability Approach |
 |---|---|
 | VPC | Resources distributed across two Availability Zones |
-| Internet Gateway | Provides Internet connectivity to the VPC |
-| NAT Gateways | One NAT Gateway in each Availability Zone |
+| NAT Gateways | One in each Availability Zone |
 | Application Load Balancer | Distributes traffic across healthy targets |
-| EC2 Auto Scaling | Adjusts application capacity based on demand |
+| EC2 Auto Scaling | Adjusts application capacity |
 | RDS Multi-AZ | Provides standby database and automatic failover |
 | CloudFront | Uses global edge locations for content delivery |
-| Amazon S3 | Provides durable object storage |
+| S3 | Provides durable object storage |
 
 These components help reduce single points of failure and support changing application demand.
 
-## 9. Monitoring
+## 9. Monitoring and Logging
 
-Amazon CloudWatch is used to monitor infrastructure and application performance.
+Amazon CloudWatch monitors infrastructure and application performance.
 
-Important metrics include:
+### Important Monitoring Metrics
 
 - EC2 CPU utilization.
-- ALB request count and response time.
+- EC2 status checks.
+- ALB request count.
+- ALB response time.
 - Unhealthy target count.
 - RDS CPU utilization.
 - Database connections.
+- Database storage.
 - Application logs.
 
-CloudWatch alarms can notify administrators when configured thresholds are exceeded.
+### CloudWatch Alarms
 
-Monitoring helps identify infrastructure failures, performance problems, and unusual resource utilization.
+CloudWatch alarms can be configured to notify administrators when monitoring thresholds are exceeded.
 
-## 10. Monthly AWS Cost Estimate
+Examples include:
 
-The current AWS Pricing Calculator estimate is:
+- High EC2 CPU utilization.
+- Unhealthy ALB targets.
+- High RDS CPU utilization.
+- Low available database storage.
+- Application errors.
 
-| AWS Service | Estimated Monthly Cost (USD) |
-|---|---:|
-| AWS Shield Standard | $0.00 |
-| AWS WAF | $0.00* |
-| Amazon CloudFront | $0.50 |
-| Application Load Balancer | $19.45 |
-| Amazon EC2 | $7.96 |
-| Amazon RDS Multi-AZ | $146.65 |
-| Amazon S3 | $1.25 |
-| Amazon Route 53 | $0.00* |
-| Amazon CloudWatch | $0.00* |
-| **Total Initial Estimate** | **$175.81** |
+Amazon SNS can be integrated with CloudWatch Alarms to send notifications.
+
+## 10. Monthly AWS Cost Estimation
+
+The following table summarizes the available AWS Pricing Calculator estimates.
+
+| AWS Resource | Configuration | Count | Estimated Monthly Cost (USD) |
+|---|---|---:|---:|
+| Amazon VPC | Custom VPC | 1 | $0.00 |
+| Public and Private Subnets | Six subnets | 6 | $0.00 |
+| Internet Gateway | Standard IGW | 1 | $0.00 |
+| NAT Gateway | Standard NAT Gateway | 2 | To be calculated |
+| Application Load Balancer | Internet-facing ALB | 1 | $19.45 |
+| Amazon EC2 | `t2.micro` | 2 | $7.96* |
+| Amazon RDS | PostgreSQL Multi-AZ | 1 | $146.65 |
+| Amazon S3 | Standard Storage | 1 | $1.25 |
+| Amazon CloudFront | CDN | 1 | $0.50 |
+| AWS WAF | Web ACL | 1 | $0.00* |
+| AWS Shield Standard | DDoS Protection | 1 | $0.00 |
+| Amazon Route 53 | DNS | 1 | $0.00* |
+| Amazon CloudWatch | Monitoring | 1 | $0.00* |
+| **Total of Available Estimates** | | | **$175.81** |
 
 ### Cost Notes
 
-- These costs are estimates based on the current calculator configuration.
-- A $0 estimate does not necessarily mean a service is always free.
-- AWS WAF, Route 53, and CloudWatch may incur charges depending on usage and configuration.
-- Verify that the EC2 estimate includes the intended number of running instances across both Availability Zones.
-- Both NAT Gateways introduce hourly and data-processing charges.
-- Public IPv4 addresses and data transfer may also incur charges.
-- RDS Multi-AZ, storage, and backup usage affect the final cost.
+- The $175.81 figure is the initial subtotal from the available calculator values, not the final architecture cost.
+- Both NAT Gateways must be included in the final calculation.
+- NAT Gateway hourly and data-processing charges may apply.
+- EC2 pricing must be verified for two `t2.micro` instances and the intended running hours.
+- RDS pricing depends on the PostgreSQL instance class, Multi-AZ deployment, storage, and backup configuration.
+- WAF, Route 53, and CloudWatch can incur additional usage-based charges even if the initial estimate shows $0.
+- Data transfer and public IPv4 charges may also apply.
+- Confirm that the AWS Pricing Calculator region is `ap-south-1` before finalizing the estimate.
+- Verify that the RDS instance class used in the calculator matches the intended configuration.
 
-**Important:** The $175.81 figure is the initial estimate, not a verified final cost for the complete architecture. The final estimate must be recalculated after including two NAT Gateways, the intended EC2 instance count, and all other required resources.
+### Cost Optimization Strategies
 
-Cost optimization can be achieved through appropriate instance sizing, Auto Scaling, monitoring, and CloudFront caching.
+- Use appropriate EC2 instance sizes.
+- Configure Auto Scaling policies.
+- Monitor NAT Gateway data processing.
+- Enable CloudFront caching.
+- Review S3 storage usage.
+- Monitor unused AWS resources.
+- Review CloudWatch log retention.
+- Select appropriate RDS storage and backup settings.
 
 ## 11. Design Decisions and Trade-offs
 
 | Design Decision | Reason | Trade-off |
 |---|---|---|
 | Two Availability Zones | Improves availability | Additional infrastructure cost |
-| Application Load Balancer | Distributes application traffic | Hourly and usage charges |
-| EC2 Auto Scaling | Automatically adjusts capacity | Requires scaling policies |
-| RDS Multi-AZ | Improves database availability | Higher cost than Single-AZ |
-| Two NAT Gateways | Provides AZ-level outbound redundancy | Additional NAT Gateway charges |
-| S3 and CloudFront | Improves static content delivery | Storage and data transfer charges |
-| Private Subnets | Protects internal resources | Requires outbound networking planning |
-| AWS WAF | Filters malicious web traffic | Additional configuration and possible charges |
-| IAM Roles | Provides controlled AWS access | Requires permission management |
+| Two NAT Gateways | AZ-level outbound redundancy | Higher NAT Gateway cost |
+| Application Load Balancer | Distributes traffic | Hourly and usage charges |
+| EC2 Auto Scaling | Adjusts capacity automatically | Requires scaling policies |
+| RDS Multi-AZ | Improves database availability | Higher database cost |
+| S3 and CloudFront | Faster content delivery | Storage and transfer charges |
+| Private Subnets | Protects internal resources | Requires outbound networking |
+| AWS WAF | Filters malicious requests | Additional configuration and possible charges |
+| IAM Roles | Secure AWS access | Permission management |
+| CloudWatch | Infrastructure monitoring | Monitoring and log usage charges may apply |
 
 ## 12. Project Deliverables
 
@@ -493,7 +608,7 @@ The project includes the following deliverables:
 
 1. **AWS Architecture Diagram (PDF)** – Visual representation of the three-tier AWS architecture.
 2. **Editable Architecture Diagram (.drawio)** – Editable source architecture diagram.
-3. **Technical Design Document (README.md)** – Explanation of AWS components, network infrastructure, security, scalability, and design decisions.
+3. **Technical Design Document (README.md)** – Explanation of AWS services, networking, security, scalability, and design decisions.
 4. **AWS Pricing Calculator Report (PDF)** – Estimated monthly infrastructure costs.
 
 ## 13. Conclusion
@@ -502,14 +617,25 @@ The proposed AWS Three-Tier E-Commerce Application Architecture provides a found
 
 The design separates presentation, application, and data workloads into independent tiers.
 
-AWS services such as Application Load Balancer, EC2 Auto Scaling, Amazon RDS Multi-AZ, S3, CloudFront, WAF, Shield, IAM, and CloudWatch work together to provide performance, security, and reliability.
+AWS services such as Application Load Balancer, EC2 Auto Scaling, Amazon RDS PostgreSQL Multi-AZ, S3, CloudFront, WAF, Shield, IAM, and CloudWatch work together to provide performance, security, and reliability.
 
-The architecture uses two Availability Zones, separate public and private subnets, and two NAT Gateways to improve network availability and resource isolation.
+The architecture uses two Availability Zones, six subnets, two NAT Gateways, and two initial EC2 instances to improve network availability and resource isolation.
 
 The design also considers cost optimization through managed services, scalable computing resources, and CDN-based content delivery.
 
-Before production deployment, the architecture should be validated through security reviews, load testing, backup and recovery testing, failover testing, and an updated cost estimate based on actual workload requirements.
+Before production deployment, the architecture should be validated through:
+
+- Security reviews.
+- Application load testing.
+- Backup and recovery testing.
+- Database failover testing.
+- Network connectivity testing.
+- Monitoring and alarm validation.
+- Final cost estimation based on actual workload requirements.
 
 ---
 
-
+**Project:** AWS Three-Tier E-Commerce Application Architecture  
+**Cloud Provider:** Amazon Web Services (AWS)  
+**Region:** Asia Pacific (Mumbai) – `ap-south-1`  
+**Architecture:** Three-Tier Architecture
