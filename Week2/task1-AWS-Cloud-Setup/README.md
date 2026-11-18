@@ -88,11 +88,9 @@ The operating system package manager was used to update the system.
 
 For Amazon Linux 2023:
 
-``bash
+```bash
 sudo dnf update -y
 ```
-
-
 
 To identify the Amazon Linux version:
 
@@ -111,7 +109,6 @@ For Amazon Linux 2023:
 ```bash
 sudo dnf install nginx -y
 ```
-
 
 Start the Nginx service:
 
@@ -157,11 +154,8 @@ Replace the existing content with:
 </head>
 <body>
     <h1>Welcome to My AWS EC2 Web Server!</h1>
-
     <h2>WeIntern Cloud Computing Internship</h2>
-
     <p>Successfully deployed using Amazon Linux and Nginx.</p>
-
     <p>EC2 Instance is running successfully.</p>
 </body>
 </html>
@@ -225,19 +219,21 @@ AWS automatically creates backing EBS snapshots for the volumes included in the 
 
 ## 11. Screenshots and Evidence
 
-The following screenshots should be included as proof of implementation.
+Screenshots of the implementation and execution results are available in the Google Drive documentation.
 
-| Screenshot | Description |
-|---|---|
-| 1 | EC2 instance running in AWS Console |
-| 2 | Security group inbound rules |
-| 3 | Successful SSH connection |
-| 4 | Nginx installation and service status |
-| 5 | Custom webpage displayed in browser |
-| 6 | AMI creation confirmation |
-| 7 | AMI status showing Available |
+The documentation includes evidence of:
 
-Create a folder named `screenshots` in the project directory and save the screenshots there.
+- EC2 instance running in AWS Console.
+- Security group inbound rules.
+- Successful SSH connection.
+- Nginx installation and service status.
+- Custom webpage displayed in the browser.
+- AMI creation confirmation.
+- AMI status showing Available.
+
+**Task 1 Detailed Documentation and Screenshots:**
+
+[View Task 1 Documentation on Google Drive](https://docs.google.com/document/d/1ieG3JWIyu8kj8_TRghkJUUe573eUhVSu3Dayj0uETOI/edit?usp=drive_link)
 
 ## 12. AWS Resource Cleanup
 
@@ -252,27 +248,7 @@ Important considerations:
 
 If the AMI is no longer required, deregister it and delete its associated snapshots after verifying that they are not needed elsewhere.
 
-## 13. Project Structure
-
-```text
-WeIntern-Task1/
-│
-├── README.md
-│
-├── screenshots/
-│   ├── 01-ec2-instance.png
-│   ├── 02-security-group.png
-│   ├── 03-ssh-connection.png
-│   ├── 04-nginx-status.png
-│   ├── 05-custom-webpage.png
-│   ├── 06-ami-creation.png
-│   └── 07-ami-available.png
-│
-└── Documentation/
-    └── Task1-Documentation.docx
-```
-
-## 14. Conclusion
+## 13. Conclusion
 
 Successfully completed the basic AWS EC2 deployment workflow.
 

@@ -170,8 +170,6 @@ CloudFront was also configured to distribute the static website content through 
 
 ### Step 3: Configure Distribution Settings
 
-Configure the following settings:
-
 | Setting | Value |
 |---|---|
 | Viewer Protocol Policy | Redirect HTTP to HTTPS |
@@ -224,27 +222,33 @@ The following activities were completed:
 | Deliverable | Description |
 |---|---|
 | Live Website URL | S3 website endpoint |
-| S3 Configuration | Screenshot of bucket configuration |
-| Bucket Policy | Screenshot of public read policy |
-| Live Website | Screenshot of website running in browser |
-| CloudFront | Screenshot of distribution configuration |
-| Documentation | README.md containing implementation steps |
+| S3 Configuration | Bucket configuration |
+| Bucket Policy | Public read policy |
+| Live Website | Website running in browser |
+| CloudFront | Distribution configuration |
+| Documentation | Detailed implementation steps and screenshots |
 
 **Note:** The AWS resources were deleted after capturing the practical screenshots. Therefore, the website is no longer live.
 
-## 11. Screenshots
+## 11. Documentation and Screenshots
 
-Add the following screenshots as evidence of task completion:
+Detailed documentation and screenshots covering the Task 2 implementation are available in Google Drive.
 
-1. S3 bucket created successfully.
-2. Website files uploaded to the bucket.
-3. Static Website Hosting enabled.
-4. Index and error document configuration.
-5. Bucket policy configured for public read access.
-6. S3 website running successfully in the browser.
-7. CloudFront distribution configuration.
-8. CloudFront distribution status as Deployed.
-9. Website running through the CloudFront domain.
+The documentation includes evidence of:
+
+- S3 bucket creation.
+- Website files uploaded to the bucket.
+- Static Website Hosting configuration.
+- Index and error document settings.
+- Bucket policy configuration for public read access.
+- S3 website running successfully in the browser.
+- CloudFront distribution configuration.
+- CloudFront distribution status showing Deployed.
+- Website running through the CloudFront domain.
+
+**Task 2 Detailed Documentation and Screenshots:**
+
+[View Task 2 Documentation on Google Drive](https://drive.google.com/drive/folders/1m1yu-bVOacOjBiM7KoY0aU-gFUmbfq80?usp=drive_link)
 
 ## 12. Resource Cleanup
 
@@ -289,3 +293,10 @@ I also created an optional Amazon CloudFront distribution to deliver website con
 Through this practical, I gained hands-on experience with S3 bucket creation, static website hosting, website file uploads, bucket policies, CloudFront configuration, website verification, and AWS resource cleanup.
 
 This task helped me understand the fundamentals of hosting and delivering static websites using AWS cloud services.
+
+---
+
+**Internship:** WeIntern Pvt. Ltd.  
+**Domain:** Cloud Computing / DevOps  
+**Task:** Week 2 – Task 2  
+**Cloud Platform:** Amazon Web Services (AWS)
